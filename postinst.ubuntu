@@ -1,0 +1,68 @@
+#!/bin/sh
+###############################################################################
+#
+#    DEB package post-installation script to install TrustedGRUB to the MBR
+#    Copyright (C) 2015  Nexor
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+#
+# IRT@Nexor - This script installs the TrustedGRUB Bootloader to the MBR
+# This script is intended for use as a DEB package post-installation script for Ubuntu 14.04
+#
+###############################################################################
+echo "#"
+echo "# Running TrustedGRUB postinstall:"
+echo "#"
+
+if [ "$1" = "configure" ] ; then  # Only run on configure
+
+    echo "# TrustedGRUB Configure.."
+    echo "#"
+
+    /bin/echo "Removing GRUB stage* files"
+    /bin/rm -rf /boot/grub/stage*
+    /bin/echo "Removing GRUB *1_5 files"
+    /bin/rm -rf /boot/grub/*1_5
+
+    /bin/echo "Copying over TrustedGRUB stage1" 
+    /bin/cp /usr/local/share/grub/stage1 /boot/grub
+    /bin/echo "Copying over TrustedGRUB stage2" 
+    /bin/cp /usr/local/share/grub/stage2 /boot/grub
+
+    # IRT@Nexor for Debian build - make sure we have a valid menu.lst file..
+    if [ -e /boot/grub/menu.lst ]; then
+        rm -f /boot/grub/menu.lst
+    fi
+    /usr/local/sbin/update-trustedgrub
+
+   /bin/echo "Attempting to install Bootloader to MBR:"
+   /usr/local/sbin/grub --no-floppy --batch << END
+root (hd0,0)
+setup (hd0)
+quit
+END
+
+elif [ "$1" != "configure" ] ; then  # Run on anything else..
+
+    echo "# TrustedGRUB non-configure actions:"
+    echo "#"
+    
+    #If we find that any actions are only required on non-configure add them here
+fi
+
+echo "#"
+echo "# Finished TrustedGRUB postinstall"
+echo "#"

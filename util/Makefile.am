@@ -1,7 +1,7 @@
 bin_PROGRAMS = mbchk
 sbin_SCRIPTS = grub-install grub-md5-crypt grub-terminfo \
-	grub-set-default
-noinst_SCRIPTS = grub-image mkbimage
+	grub-set-default update-trustedgrub
+noinst_SCRIPTS = grub-image mkbimage zz-update-trustedgrub
 
 EXTRA_DIST = mkbimage
 

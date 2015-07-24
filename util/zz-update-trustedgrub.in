@@ -1,0 +1,38 @@
+#! /bin/sh
+#
+#    Ubuntu Kernel post-installation script to update TrustedGRUB menu.lst file
+#    Copyright (C) 2015  Nexor
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+
+set -e
+
+which update-trustedgrub >/dev/null 2>&1 || exit 0
+
+set -- $DEB_MAINT_PARAMS
+mode="${1#\'}"
+mode="${mode%\'}"
+case $0:$mode in
+    # Only run on postinst configure and postrm remove, to avoid wasting
+    # time by calling update-grub multiple times on upgrade and removal.
+    # Also run if we have no DEB_MAINT_PARAMS, in order to work with old
+    # kernel packages.
+    */postinst.d/*:|*/postinst.d/*:configure|*/postrm.d/*:|*/postrm.d/*:remove)
+	exec update-trustedgrub
+	;;
+esac
+
+exit 0

@@ -17,7 +17,7 @@ configure_tgrub()
         if [ $? != 0 ]; then exit 501; fi
         autoconf >& $VERBOSE
         if [ $? != 0 ]; then exit 502; fi
-        automake >& $VERBOSE
+        automake -a >& $VERBOSE
         if [ $? != 0 ]; then exit 503; fi
         if [[ $SHOWSHA1 ]] ; then
             ./configure CFLAGS="-DSHOW_SHA1" >& $VERBOSE
@@ -40,6 +40,7 @@ build_tgrub()
     chmod g+w * -R
     if [ $? != 0 ]; then exit 604; fi
     chmod a+x util/grub-install
+    chmod a+x util/update-trustedgrub
     if [ $? != 0 ]; then exit 605; fi
 }
 
